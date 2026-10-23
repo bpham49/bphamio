@@ -5,7 +5,10 @@ import { spawn } from 'node:child_process'
 // sibling project) running alongside this app, and tells it which file is open
 // so Claude can act on "the diagram you're looking at" without being told a path.
 const PORT = 37651
-const MCP_SERVER_PATH = '/Users/nguyen/Dev/drawing-agent/src/mcp-server.ts'
+// ponytail: defaults to the author's checkout; anyone else sets
+// BPHAMIO_MCP_SERVER to their own mcp-server.ts. Bundle the server into the
+// app when it needs to work with zero setup.
+const MCP_SERVER_PATH = process.env.BPHAMIO_MCP_SERVER ?? '/Users/nguyen/Dev/drawing-agent/src/mcp-server.ts'
 
 function checkHealth()
 {
@@ -19,6 +22,35 @@ function checkHealth()
 		req.on('error', () => resolve(false))
 		req.on('timeout', () => { req.destroy(); resolve(false) })
 	})
+}
+
+function getActiveFile()
+{
+	return new Promise((resolve) =>
+	{
+		const req = http.get(`http://127.0.0.1:${PORT}/active-file`, { timeout: 500 }, (res) =>
+		{
+			let body = ''
+			res.on('data', (c) => (body += c))
+			res.on('end', () =>
+			{
+				try { resolve(JSON.parse(body).path ?? null) }
+				catch (e) { resolve(null) }
+			})
+		})
+		req.on('error', () => resolve(null))
+		req.on('timeout', () => { req.destroy(); resolve(null) })
+	})
+}
+
+// Used by the mcp-setup plugin's status panel — fetched from the main process
+// because the renderer's own CSP (connect-src 'self') blocks it from reaching
+// 127.0.0.1 directly, even though it's local.
+export async function getMcpStatus()
+{
+	const running = await checkHealth()
+	const activeFile = running ? await getActiveFile() : null
+	return { running, port: PORT, url: `http://127.0.0.1:${PORT}/mcp`, activeFile }
 }
 
 // Spawned detached: closing every window doesn't quit a macOS app (it lingers

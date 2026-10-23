@@ -18,7 +18,7 @@ import { getPrintOptions } from './print-options.js';
 import FileWatcher from './file-watcher.js';
 import { ConfigPathGrants } from './config-paths.js';
 import { getUrlParams, getUrlParamsFiles } from './url-params.js';
-import { ensureMcpServerRunning, reportActiveFile, stopMcpServer } from './drawio-agentic.js';
+import { ensureMcpServerRunning, reportActiveFile, stopMcpServer, getMcpStatus } from './drawio-agentic.js';
 import elecUpPkg from 'electron-updater';
 const {autoUpdater} = elecUpPkg;
 import {PDFDocument, PDFHexString, PDFName} from '@cantoo/pdf-lib';
@@ -4540,6 +4540,9 @@ ipcMain.on("rendererReq", async (event, args) =>
 			break;
 		case 'clipboardAction':
 			ret = await clipboardAction(args.method, args.data);
+			break;
+		case 'mcpStatus':
+			ret = await getMcpStatus();
 			break;
 		case 'deleteFile':
 			reqStr(args.file, 'file');
