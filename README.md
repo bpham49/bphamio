@@ -5,7 +5,7 @@ bphamio
 
 What's different from stock draw.io desktop:
 
-- **A local MCP server** ([`bpham/drawing-agent`](https://github.com/bpham/drawing-agent)) that lets Claude Code or Claude Desktop read and edit the diagram you have open, live, over HTTP on `127.0.0.1` — no cloud round-trip. This app spawns that server automatically and reports which file is open to it.
+- **A built-in local MCP server** (source in [`mcp/`](mcp/)) that lets Claude Code or Claude Desktop read and edit the diagram you have open, live, over HTTP on `127.0.0.1:37651` — no cloud round-trip, nothing extra to install. It runs inside the app itself: up while bphamio is running (including in the background with no windows open), gone when you quit. `Extras > MCP Setup…` shows its status and gives you the one-line command to connect Claude Code, or the config snippet for Claude Desktop.
 - **A native freehand pencil tool** (`Extras > Freehand Draw`, or press `P`), drawn as an ordinary curved `mxCell` edge — fully compatible with vanilla draw.io, no custom shape class.
 - **Autosave forced on**, unconditionally — needed for the live agent-editing workflow to actually show up on screen without a manual save.
 
@@ -33,7 +33,9 @@ git clone --recursive https://github.com/bpham49/bphamio.git
 Then:
 1. `npm install` (in the root directory of this repo)
 2. `export DRAWIO_ENV=dev` to develop/debug with unminified sources and DevTools
-3. `npm start` runs the app from source. For debugging, use `npm start --enable-logging`.
+3. `npm start` bundles the MCP server (`npm run build-mcp`: `mcp/` → `src/main/mcp-server.bundle.js`) and runs the app from source. For debugging, use `npm start --enable-logging`.
+
+The MCP server can also run on its own, outside the app (e.g. against stock draw.io): `cd mcp && npm ci && npm start`. Its tests: `npm test` and `npm run typecheck` in `mcp/`.
 
 Note: If a symlink is used to refer to the drawio repo (instead of the submodule), symlink `node_modules` inside `drawio/src/main/webapp` too.
 

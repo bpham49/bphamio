@@ -52,6 +52,9 @@ jobs:
       - name: Build
         run: |
           npm ci
+          # Bundles mcp/ (the local MCP server) into src/main/mcp-server.bundle.js,
+          # which the app starts in-process; without it the agent layer is absent
+          npm run build-mcp
           # disableUpdate stops the app replacing itself with the official
           # (unmodified) release via auto-update
           npm run sync -- disableUpdate

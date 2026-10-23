@@ -826,8 +826,8 @@ function createWindow (opt = {})
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() =>
 {
-	// Best-effort: the MCP server outlives this app once started, so this is a
-	// no-op most of the time after the first launch.
+	// Starts the bundled MCP server in this process (see drawio-agentic.js).
+	// Not awaited: a failure to bind must never delay or block app startup.
 	ensureMcpServerRunning();
 
 	// Determine initial defaultAdaptiveColors for the drawio Configuration

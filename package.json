@@ -9,14 +9,15 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "start": "electron .",
+    "start": "npm run build-mcp && electron .",
     "sync": "node ./sync.cjs",
     "test": "node --test src/test/cli-args.test.js src/test/msi-project-created.test.js src/test/window-bounds.test.js src/test/update-channel.test.js src/test/update-mode.test.js src/test/export-files.test.js src/test/system-path.test.js src/test/file-watcher.test.js src/test/backup-file.test.js src/test/config-paths.test.js src/test/print-options.test.js src/test/url-params.test.js",
     "release-win": "electron-builder --config electron-builder-win.json --publish always",
     "release-win-arm64": "electron-builder --config electron-builder-win-arm64.json --publish always",
     "release-appx": "electron-builder --config electron-builder-appx.json --publish never",
     "release-linux": "electron-builder --config electron-builder-linux-mac.json --publish always",
-    "release-snap": "electron-builder --config electron-builder-snap.json --publish never"
+    "release-snap": "electron-builder --config electron-builder-snap.json --publish never",
+    "build-mcp": "cd mcp && npm ci && npm run bundle"
   },
   "repository": {
     "type": "git",

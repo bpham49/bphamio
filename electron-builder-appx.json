@@ -4,6 +4,7 @@
   "asar": true,
   "files": [
     "**/*",
+    "!mcp{,/**}",
     "!**/WEB-INF{,/**}",
     "!drawio/src/main/webapp/stencils/**/*.xml",
     "!drawio/src/main/webapp/shapes{,/**}",

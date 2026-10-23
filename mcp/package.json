@@ -1,0 +1,27 @@
+{
+  "name": "bphamio-mcp",
+  "version": "0.3.0",
+  "private": true,
+  "description": "bphamio's local MCP server: reads and writes real .drawio XML for live agent-driven diagram editing. Bundled into the app and started in-process; also runnable standalone.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "scripts": {
+    "start": "node src/cli.ts",
+    "test": "node test/smoke.ts",
+    "typecheck": "tsc --noEmit",
+    "bundle": "esbuild src/server.ts --bundle --platform=node --format=esm --target=node22 --outfile=../src/main/mcp-server.bundle.js --banner:js=\"import { createRequire as __bphamioCreateRequire } from 'node:module'; const require = __bphamioCreateRequire(import.meta.url);\""
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@xmldom/xmldom": "^0.9.12",
+    "elkjs": "^0.12.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,14 +1,13 @@
 import http from 'node:http'
-import { spawn } from 'node:child_process'
 
-// drawio-agentic: keeps the local MCP server (../../../src/mcp-server.ts in the
-// sibling project) running alongside this app, and tells it which file is open
-// so Claude can act on "the diagram you're looking at" without being told a path.
+// bphamio: runs the local MCP server (mcp/, bundled by `npm run build-mcp`
+// into mcp-server.bundle.js) inside this Electron main process, and tells it
+// which file is open so Claude can act on "the diagram you're looking at"
+// without being told a path. In-process means its lifecycle is the app's:
+// it keeps running while the app lingers in the macOS dock with no windows,
+// and stops when the app truly quits — no separate process to spawn or kill.
 const PORT = 37651
-// ponytail: defaults to the author's checkout; anyone else sets
-// BPHAMIO_MCP_SERVER to their own mcp-server.ts. Bundle the server into the
-// app when it needs to work with zero setup.
-const MCP_SERVER_PATH = process.env.BPHAMIO_MCP_SERVER ?? '/Users/nguyen/Dev/drawing-agent/src/mcp-server.ts'
+let ownedServer = null
 
 function checkHealth()
 {
@@ -53,40 +52,31 @@ export async function getMcpStatus()
 	return { running, port: PORT, url: `http://127.0.0.1:${PORT}/mcp`, activeFile }
 }
 
-// Spawned detached: closing every window doesn't quit a macOS app (it lingers
-// in the dock), and the server should keep running through that, same as the
-// app does — stopMcpServer() below is what actually ends its lifecycle, tied
-// to app.on('will-quit'), the true-quit event, not window-all-closed.
 export async function ensureMcpServerRunning()
 {
-	if (await checkHealth()) return
-
 	try
 	{
-		const child = spawn('node', [MCP_SERVER_PATH], { detached: true, stdio: 'ignore' })
-		child.unref()
+		const { startMcpServer } = await import('./mcp-server.bundle.js')
+		ownedServer = await startMcpServer({ port: PORT })
 	}
 	catch (e)
 	{
-		console.error('drawio-agentic: failed to start MCP server', e)
+		// EADDRINUSE: something already serves this port (a standalone
+		// `npm start` in mcp/, say). Leave it be — the status panel and
+		// reportActiveFile talk to whichever server answers on PORT.
+		if (e && e.code !== 'EADDRINUSE')
+		{
+			console.error('bphamio: failed to start MCP server', e)
+		}
 	}
 }
 
-// Called from app.on('will-quit') — best-effort, and deliberately not awaited
-// by the caller: app quit must never hang on this.
 export function stopMcpServer()
 {
-	try
+	if (ownedServer != null)
 	{
-		const req = http.request(`http://127.0.0.1:${PORT}/shutdown`, { method: 'POST', timeout: 500 }, (res) => res.resume())
-		req.on('error', () => {})
-		req.on('timeout', () => req.destroy())
-		req.end()
-	}
-	catch (e)
-	{
-		// best-effort; a stray server process next launch just fails the health
-		// check and gets replaced
+		ownedServer.close()
+		ownedServer = null
 	}
 }
 
