@@ -18,6 +18,7 @@ import { getPrintOptions } from './print-options.js';
 import FileWatcher from './file-watcher.js';
 import { ConfigPathGrants } from './config-paths.js';
 import { getUrlParams, getUrlParamsFiles } from './url-params.js';
+import { ensureMcpServerRunning, reportActiveFile, stopMcpServer } from './drawio-agentic.js';
 import elecUpPkg from 'electron-updater';
 const {autoUpdater} = elecUpPkg;
 import {PDFDocument, PDFHexString, PDFName} from '@cantoo/pdf-lib';
@@ -487,6 +488,9 @@ var queryObj = getUrlParams({
 		'picker': 0,
 		'mode': 'device',
 		'export': 'https://convert.diagrams.net/node/export'
+		// drawio-agentic: the freehand plugin loads itself from
+		// js/PostConfig.js now, not through this registry-based 'p' param —
+		// see PostConfig.js for why.
 	},
 	state: {
 		'disableUpdate': updateMode == 'off'? 1 : 0,
@@ -822,6 +826,10 @@ function createWindow (opt = {})
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() =>
 {
+	// Best-effort: the MCP server outlives this app once started, so this is a
+	// no-op most of the time after the first launch.
+	ensureMcpServerRunning();
+
 	// Determine initial defaultAdaptiveColors for the drawio Configuration
 	// before any window is created so the value is passed to the preload.
 	initialAdaptiveColorsDefault = detectInitialAdaptiveColorsDefault();
@@ -1963,6 +1971,14 @@ app.on('window-all-closed', function ()
 	}
 })
 
+// Fires only on a true quit, never on window-all-closed alone (the app lingers
+// in the dock on macOS until Cmd+Q, same as above) — matches the MCP server's
+// lifecycle to the app's, not to "all windows happen to be closed right now".
+app.on('will-quit', function ()
+{
+	stopMcpServer();
+})
+
 app.on('activate', function ()
 {
 	if (__DEV__) 
@@ -2128,7 +2144,7 @@ function checkForUpdatesFn(e)
 		{
 			updateFirstProg = true;
 			updateProgressBar = new ProgressBar({
-				title: 'draw.io Update',
+				title: 'bphamio Update',
 				text: 'Downloading draw.io update...'
 			});
 		}
@@ -2211,7 +2227,7 @@ function showUpdateReady(version)
 		buttons: ['Restart Now', 'Later'],
 		defaultId: 0,
 		cancelId: 1,
-		title: 'draw.io Update',
+		title: 'bphamio Update',
 		message: `draw.io ${version} has been downloaded`,
 		detail: 'Restart draw.io to install it now, or it will be installed when you quit draw.io.'
 	}).then(result =>
@@ -2232,7 +2248,7 @@ function showUpdateAvailable(version)
 		buttons: ['Download', 'Cancel'],
 		defaultId: 0,
 		cancelId: 1,
-		title: 'draw.io Update',
+		title: 'bphamio Update',
 		message: `draw.io update available (${app.getVersion()} → ${version})`,
 		detail: 'Download the new version from its release page and install it the same way as this one.'
 	}).then(result =>
@@ -2313,7 +2329,7 @@ autoUpdater.on('download-progress', safeUpdaterListener('download-progress', (d)
 
 		var progressBar = new ProgressBar({
 			indeterminate: false,
-			title: 'draw.io Update',
+			title: 'bphamio Update',
 			text: 'Downloading draw.io update...',
 			detail: `${percent}% ...`,
 			initialValue: percent
@@ -2405,7 +2421,7 @@ autoUpdater.on('update-available', safeUpdaterListener('update-available', (info
 
 			updateFirstProg = true;
 			updateProgressBar = new ProgressBar({
-				title: 'draw.io Update',
+				title: 'bphamio Update',
 				text: 'Downloading draw.io update...'
 			});
 
@@ -4468,10 +4484,12 @@ ipcMain.on("rendererReq", async (event, args) =>
 			if (args.fileObject == null) throw new Error('bad arg: fileObject');
 			reqStr(args.fileObject.path, 'fileObject.path');
 			ret = await saveFile(args.fileObject, args.data, args.origStat, args.overwrite, args.defEnc);
+			reportActiveFile(args.fileObject.path);
 			break;
 		case 'writeFile':
 			reqStr(args.path, 'path');
 			ret = await writeFile(args.path, args.data, args.enc);
+			reportActiveFile(args.path);
 			break;
 		case 'saveDraft':
 			if (args.fileObject == null) throw new Error('bad arg: fileObject');

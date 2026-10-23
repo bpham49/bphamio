@@ -1,107 +1,57 @@
-About
------ 
+bphamio
+=======
 
-**drawio-desktop** is a diagramming desktop app based on [Electron](https://electronjs.org/) that wraps the [core draw.io editor](https://github.com/jgraph/drawio).
+**bphamio** is a diagramming desktop app, forked from [draw.io desktop](https://github.com/jgraph/drawio-desktop) (which wraps the [core draw.io editor](https://github.com/jgraph/drawio)), with an agentic layer added on top. It reads and writes the exact same `.drawio` file format — files made here open fine in stock draw.io, and vice versa.
 
-Download built binaries from the [releases section](https://github.com/jgraph/drawio-desktop/releases).
+What's different from stock draw.io desktop:
 
-**Can I use this app for free?** Yes, under the GPL v3 license. If you don't change the code and accept it is provided "as-is", you can use it for any purpose.
+- **A local MCP server** ([`bpham/drawing-agent`](https://github.com/bpham/drawing-agent)) that lets Claude Code or Claude Desktop read and edit the diagram you have open, live, over HTTP on `127.0.0.1` — no cloud round-trip. This app spawns that server automatically and reports which file is open to it.
+- **A native freehand pencil tool** (`Extras > Freehand Draw`, or press `P`), drawn as an ordinary curved `mxCell` edge — fully compatible with vanilla draw.io, no custom shape class.
+- **Autosave forced on**, unconditionally — needed for the live agent-editing workflow to actually show up on screen without a manual save.
 
-Windows installation
---------------------
+Attribution and license
+------------------------
 
-Three flavours of Windows download are published on the [releases page](https://github.com/jgraph/drawio-desktop/releases):
+This is a derivative work of [jgraph/drawio-desktop](https://github.com/jgraph/drawio-desktop) (GPL-3.0-only) and [jgraph/drawio](https://github.com/jgraph/drawio) (Apache-2.0), both © JGraph Ltd / draw.io AG. All original copyright notices and license headers are preserved as-is in the source. bphamio's own additions are licensed GPL-3.0-only, same as the project it extends. See [LICENSE](LICENSE).
 
-- `draw.io-<version>-windows-installer.exe` — NSIS installer. Installs **per-machine** into `Program Files` and **requires administrator privileges**.
-- `draw.io-<version>.msi` — MSI installer. Installs **per-user** into the user's profile and **does not require administrator privileges**. Use this one if you don't have admin rights on your machine.
-- `draw.io-<version>-windows.zip` — portable build. Extract the zip anywhere and run `draw.io.exe`, with no installation (and therefore without admin rights). File-type associations are not registered.
+This is an independent personal fork, not affiliated with or endorsed by JGraph or draw.io AG.
 
-The Microsoft Store (APPX) build is also installable per-user without admin rights via the Store.
-
-### Windows on Arm
-
-draw.io Desktop is built natively for Windows on Arm (ARM64) and is supported on Windows 11 ARM64 devices. Two native ARM64 downloads are published with every release:
-
-- `draw.io-arm64-<version>-windows-arm64-installer.exe` — NSIS installer, per-machine, requires administrator privileges.
-- `draw.io-arm64-<version>-windows-arm64-no-installer.exe` — portable build, no installation or admin rights needed.
-
-The MSI and Microsoft Store builds are x64 only and run under emulation on ARM64 devices. ARM64 builds up to and including 31.4.4 were shipped with auto-update disabled; install a newer release manually once, after which the ARM64 installer build updates itself like x64.
-
-Linux installation
-------------------
-
-If you manage AppImages with [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher), you need a 3.0 release of it (currently labelled beta). Since 31.4.2 the AppImage uses the static AppImage runtime so that it no longer depends on the end-of-life `libfuse2`, and AppImageLauncher 2.2.0, the last stable release, cannot load a static runtime. The app then fails to start with:
-
-```
-fuse: memory allocation failed
-squashfuse 0.5.2 (c) 2012 Dave Vasilevsky
-...
-Can't open squashfs image: Bad address
-```
-
-Install a current AppImageLauncher from its [releases page](https://github.com/TheAssassin/AppImageLauncher/releases), which provides .deb packages, or uninstall AppImageLauncher altogether. It is not needed to run the AppImage. See [#2538](https://github.com/jgraph/drawio-desktop/issues/2538) for the detail.
-
-Updates
--------
-
-How draw.io Desktop updates depends on how it was installed:
-
-- **Windows installer (`.exe`), macOS and AppImage:** new versions download in the background. When one is ready, the editor shows a notice, and clicking it or Help > Restart to Update installs it straight away. Otherwise it is installed when you quit draw.io. The Windows installer is per-machine, so the update asks for administrator rights.
-- **MSI, Windows zip, Windows ARM64 portable, deb and rpm:** draw.io tells you when a new version is available and links to its release page. Install it the same way as the current one.
-- **Microsoft Store, Snap and Flatpak:** the store updates the app, and draw.io does not check for updates.
-
-Extras > Automatic Updates (draw.io > Check for Updates Automatically on macOS) turns the background checks off. Help > Check for Updates still works. For centrally managed installs, set the `DRAWIO_DISABLE_UPDATE=true` environment variable or pass `--disable-update` to turn off all update checks, or set `DRAWIO_NO_SILENT_UPDATE=true` or pass `--no-silent-update` so that draw.io asks before it downloads an update.
-
-Security
+Download
 --------
 
-draw.io Desktop is designed to be completely isolated from the Internet, apart from the update process. This checks github.com once a day for a newer version and downloads it from an AWS S3 bucket owned by Github. To disable the update check entirely (e.g. for centrally-managed installs), set the `DRAWIO_DISABLE_UPDATE=true` environment variable or pass `--disable-update` on launch. All JavaScript files are self-contained, the Content Security Policy forbids running remotely loaded JavaScript.
-
-No diagram data is ever sent externally, nor do we send any analytics about app usage externally. The Content Security Policy on the web part of the interface forbids remotely-loaded JavaScript and restricts the application's own network connections to itself, so the app cannot transmit your diagrams or otherwise phone home. Note that a diagram can reference external media - for example an image, background or font loaded from a URL embedded in the diagram - and these are fetched when the diagram is opened so that it renders correctly. Opening a diagram from an untrusted source may therefore trigger a request to the referenced URL, which can reveal metadata such as your IP address to that server; no diagram content is transmitted.
-
-Security and isolating the app are the primarily objectives of draw.io desktop. If you ask for anything that involves external connections enabled in the app by default, the answer will be no.
-
-Support
--------
-
-Support is provided on a reasonable business constraints basis, but without anything contractually binding. All support is provided via this repo. There is no private ticketing support for non-paying users.
-
-Purchasing draw.io for Confluence or Jira does not entitle you to commercial support for draw.io desktop.
+This is an unsigned, personal build — see [doc/BUILDING_FOR_PERSONAL_USE.md](doc/BUILDING_FOR_PERSONAL_USE.md) for what that means and how to build it yourself. Built binaries, when published, land on the [releases page](https://github.com/bpham49/bphamio/releases) as `bphamio-<version>` artifacts (same installer types as upstream: NSIS/MSI/zip on Windows, AppImage/deb/rpm on Linux, dmg on macOS).
 
 Developing
 ----------
 
-**draw.io** is a git submodule of **drawio-desktop**. To get both you need to clone recursively:
+**drawio** is a git submodule, forked separately to [bpham49/drawio](https://github.com/bpham49/drawio) so the editor-side customizations (the freehand plugin, the autosave fix) travel with it. Clone recursively:
 
-`git clone --recursive https://github.com/jgraph/drawio-desktop.git`
+```
+git clone --recursive https://github.com/bpham49/bphamio.git
+```
 
-To run this:
+Then:
 1. `npm install` (in the root directory of this repo)
-2. [internal use only] export DRAWIO_ENV=dev if you want to develop/debug in dev mode.
-3. `npm start` _in the root directory of this repo_ runs the app. For debugging, use `npm start --enable-logging`.
+2. `export DRAWIO_ENV=dev` to develop/debug with unminified sources and DevTools
+3. `npm start` runs the app from source. For debugging, use `npm start --enable-logging`.
 
-Note: If a symlink is used to refer to drawio repo (instead of the submodule), then symlink the `node_modules` directory inside `drawio/src/main/webapp` also.
+Note: If a symlink is used to refer to the drawio repo (instead of the submodule), symlink `node_modules` inside `drawio/src/main/webapp` too.
 
-To fork the project, make your own changes and build an (unsigned) app for personal use, see [doc/BUILDING_FOR_PERSONAL_USE.md](doc/BUILDING_FOR_PERSONAL_USE.md).
+To build a local unsigned installer, see [doc/BUILDING_FOR_PERSONAL_USE.md](doc/BUILDING_FOR_PERSONAL_USE.md).
 
-The release process (GitHub Actions builds, signing and publishing) is described in [doc/RELEASE_PROCESS.md](doc/RELEASE_PROCESS.md).
-
-Local Storage and Session Storage is stored in the AppData folder:
+Local storage and session storage live in the AppData folder (unchanged from upstream, since the bundle/app identifiers were updated to avoid colliding with an existing draw.io install — see `appId`/`CFBundleIdentifier` in the `electron-builder-*.json` configs):
 
 - macOS: `~/Library/Application Support/draw.io`
 - Windows: `C:\Users\<USER-NAME>\AppData\Roaming\draw.io\`
 
-Not open-contribution
----------------------
+Security
+--------
 
-draw.io is closed to contributions (unless a maintainer permits it, which is extremely rare).
+Same security posture as upstream draw.io desktop: isolated from the internet apart from the (optional) update check, Content Security Policy forbids remotely-loaded JavaScript, no diagram content or usage analytics sent externally. The one addition — the local MCP server — only listens on `127.0.0.1`, never leaves the machine.
 
-The level of complexity of this project means that even simple changes 
-can break a _lot_ of other moving parts. The amount of testing required 
-is far more than it first seems. If we were to receive a PR, we'd have 
-to basically throw it away and write it how we want it to be implemented.
+No diagram data is ever sent externally. A diagram can reference external media (an image, background or font loaded from a URL embedded in the diagram), and those are fetched when the diagram opens; opening a diagram from an untrusted source can therefore trigger a request that reveals metadata like your IP address to that server, though no diagram content is transmitted.
 
-We are grateful for community involvement, bug reports, & feature requests. We do
-not wish to come off as anything but welcoming, however, we've
-made the decision to keep this project closed to contributions for 
-the long term viability of the project.
+Updates
+-------
+
+Auto-update checks are disabled in this fork's personal build config (`npm run sync -- disableUpdate`), so a modified build doesn't silently replace itself with an unmodified official release.

@@ -1,7 +1,7 @@
 {
-  "name": "draw.io",
+  "name": "bphamio",
   "version": "32.5.5",
-  "description": "draw.io desktop",
+  "description": "bphamio — an agentic diagramming desktop app, forked from draw.io desktop (jgraph/drawio-desktop) with a local MCP agent layer, a freehand pencil tool, and always-on autosave",
   "exports": "./src/main/electron.js",
   "type": "module",
   "main": "src/main/electron.js",
@@ -20,20 +20,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:jgraph/drawio-desktop.git"
+    "url": "git@github.com:bpham49/bphamio.git"
   },
   "keywords": [
+    "bphamio",
     "draw.io",
     "diagram",
     "flowchart",
-    "UML"
+    "UML",
+    "mcp",
+    "agentic"
   ],
-  "author": "JGraph <support@draw.io>",
+  "author": "bpham49",
   "license": "GPL-3.0-only",
   "bugs": {
-    "url": "https://github.com/jgraph/drawio-desktop/issues"
+    "url": "https://github.com/bpham49/bphamio/issues"
   },
-  "homepage": "https://github.com/jgraph/drawio",
+  "homepage": "https://github.com/bpham49/bphamio",
   "dependencies": {
     "@cantoo/pdf-lib": "^2.7.3",
     "buffer": "^6.0.3",

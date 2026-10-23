@@ -1,6 +1,6 @@
 {
-  "appId": "com.jgraph.drawio.desktop",
-  "copyright": "Copyright 2017-2026 draw.io Ltd",
+  "appId": "com.bpham49.bphamio",
+  "copyright": "Copyright 2017-2026 draw.io Ltd and JGraph (upstream); bphamio additions Copyright 2026 bpham49",
   "asar": true,
   "files": [
     "**/*",
@@ -32,8 +32,8 @@
     "extendInfo": {
       "UTExportedTypeDeclarations": [
         {
-          "UTTypeIdentifier": "com.jgraph.drawio",
-          "UTTypeDescription": "draw.io Diagram",
+          "UTTypeIdentifier": "com.bpham49.bphamio",
+          "UTTypeDescription": "bphamio Diagram (.drawio)",
           "UTTypeConformsTo": ["public.xml", "public.data"],
           "UTTypeTagSpecification": {
             "public.filename-extension": ["drawio"],
@@ -44,10 +44,10 @@
       "CFBundleDocumentTypes": [
         {
           "CFBundleTypeExtensions": ["drawio"],
-          "CFBundleTypeName": "draw.io Diagram",
+          "CFBundleTypeName": "bphamio Diagram (.drawio)",
           "CFBundleTypeRole": "Editor",
           "CFBundleTypeIconFile": "icon.icns",
-          "LSItemContentTypes": ["com.jgraph.drawio"],
+          "LSItemContentTypes": ["com.bpham49.bphamio"],
           "LSHandlerRank": "Owner"
         },
         {
