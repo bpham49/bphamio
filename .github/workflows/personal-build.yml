@@ -45,6 +45,24 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 24
+      - name: Installing Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+      # Rebuilds js/app.min.js from the editor sources (drawio/etc/build), so
+      # the shipped editor carries this fork's source changes (branding, help
+      # links) instead of upstream's pre-built bundle
+      - name: Build editor from source
+        env:
+          ANT_VERSION: 1.10.15
+          ANT_SHA512: 1de7facbc9874fa4e5a2f045d5c659f64e0b89318c1dbc8acc6aae4595c4ffaf90a7b1ffb57f958dd08d6e086d3fff07aa90e50c77342a0aa5c9b4c36bff03a9
+        run: |
+          curl -fsSLo ant.zip "https://archive.apache.org/dist/ant/binaries/apache-ant-${ANT_VERSION}-bin.zip"
+          echo "${ANT_SHA512}  ant.zip" | shasum -a 512 -c -
+          unzip -q ant.zip -d "$RUNNER_TEMP"
+          cd drawio/etc/build
+          "$RUNNER_TEMP/apache-ant-${ANT_VERSION}/bin/ant" app
       - name: Install Linux packaging tools
         if: ${{ inputs.platform == 'linux' }}
         run: |
