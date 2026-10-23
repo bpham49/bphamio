@@ -187,6 +187,12 @@ function safeUpdaterListener(label, fn)
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
+// The webapp only runs in desktop mode (mxIsElectron in bootstrap.js) when the
+// user agent contains " draw.io/". Electron derives that token from the app
+// name, so the bphamio rename dropped it and every window ran as the web app:
+// no file paths on save, no close/quit handshake
+app.userAgentFallback = app.userAgentFallback.replace(/ bphamio\//, ' draw.io/');
+
 //Command option to disable hardware acceleration
 if (process.argv.indexOf('--disable-acceleration') !== -1)
 {
