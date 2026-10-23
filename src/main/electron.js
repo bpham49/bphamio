@@ -135,7 +135,7 @@ function notifyUpdateFailure(err, context)
 		{
 			type: 'error',
 			title: 'Update Error',
-			message: 'There was a problem updating draw.io.',
+			message: 'There was a problem updating bphamio.',
 			detail: 'Please manually download and update from ' + UPDATE_DOWNLOAD_URL
 		});
 	}
@@ -350,8 +350,8 @@ async function confirmConfigPaths(webContents, entries)
 	{
 		type: 'warning',
 		title: 'Configuration',
-		message: 'Allow draw.io to read the files named in its configuration?',
-		detail: 'Extras > Configuration names local files that draw.io has not been allowed to read:\n\n' +
+		message: 'Allow bphamio to read the files named in its configuration?',
+		detail: 'Extras > Configuration names local files that bphamio has not been allowed to read:\n\n' +
 			names.join('\n') + '\n\nOnly allow this if you added them to the configuration yourself.',
 		buttons: ['Allow', 'Don\'t Allow'],
 		defaultId: 1,
@@ -545,7 +545,7 @@ function createWindow (opt = {})
 		backgroundColor: nativeTheme.shouldUseDarkColors ? '#1B1D1E' : '#F1F3F4',
 		width: lastWinSize.width,
 		height: lastWinSize.height,
-		icon: `${codeDir}/images/drawlogo256.png`,
+		icon: `${codeDir}/images/bphamio256.png`,
 		webPreferences: {
 			preload: `${__dirname}/electron-preload.js`,
 			spellcheck: enableSpellCheck,
@@ -1818,7 +1818,7 @@ app.whenReady().then(() =>
 		{
 			type: 'question',
 			title: 'Update Check Interval',
-			message: 'How often should draw.io check for updates?',
+			message: 'How often should bphamio check for updates?',
 			detail: `Current interval: ${currentHours === 168 ? '1 week' : currentHours + ' hours'}`,
 			buttons: buttons,
 			defaultId: hours.indexOf(currentHours) >= 0 ? hours.indexOf(currentHours) : hours.indexOf(DEFAULT_UPDATE_CHECK_HOURS),
@@ -2152,7 +2152,7 @@ function checkForUpdatesFn(e)
 			updateFirstProg = true;
 			updateProgressBar = new ProgressBar({
 				title: 'bphamio Update',
-				text: 'Downloading draw.io update...'
+				text: 'Downloading bphamio update...'
 			});
 		}
 	}
@@ -2235,8 +2235,8 @@ function showUpdateReady(version)
 		defaultId: 0,
 		cancelId: 1,
 		title: 'bphamio Update',
-		message: `draw.io ${version} has been downloaded`,
-		detail: 'Restart draw.io to install it now, or it will be installed when you quit draw.io.'
+		message: `bphamio ${version} has been downloaded`,
+		detail: 'Restart bphamio to install it now, or it will be installed when you quit bphamio.'
 	}).then(result =>
 	{
 		if (result.response === 0)
@@ -2256,7 +2256,7 @@ function showUpdateAvailable(version)
 		defaultId: 0,
 		cancelId: 1,
 		title: 'bphamio Update',
-		message: `draw.io update available (${app.getVersion()} → ${version})`,
+		message: `bphamio update available (${app.getVersion()} → ${version})`,
 		detail: 'Download the new version from its release page and install it the same way as this one.'
 	}).then(result =>
 	{
@@ -2337,7 +2337,7 @@ autoUpdater.on('download-progress', safeUpdaterListener('download-progress', (d)
 		var progressBar = new ProgressBar({
 			indeterminate: false,
 			title: 'bphamio Update',
-			text: 'Downloading draw.io update...',
+			text: 'Downloading bphamio update...',
 			detail: `${percent}% ...`,
 			initialValue: percent
 		});
@@ -2413,9 +2413,9 @@ autoUpdater.on('update-available', safeUpdaterListener('update-available', (info
 		buttons: manual ? ['Ok', 'Cancel'] : ['Ok', 'Later', 'Don\'t Ask Again'],
 		defaultId: 0,
 		cancelId: 1,
-		title: 'Confirm draw.io Update',
-		message: `draw.io update available (${app.getVersion()} → ${info.version}).\n\nWould you like to download and install new version?`,
-		detail: 'When the download is finished, draw.io installs it on restart or when you quit',
+		title: 'Confirm bphamio Update',
+		message: `bphamio update available (${app.getVersion()} → ${info.version}).\n\nWould you like to download and install new version?`,
+		detail: 'When the download is finished, bphamio installs it on restart or when you quit',
 	}).then( result =>
 	{
 		if (result.response === 0)
@@ -2429,7 +2429,7 @@ autoUpdater.on('update-available', safeUpdaterListener('update-available', (info
 			updateFirstProg = true;
 			updateProgressBar = new ProgressBar({
 				title: 'bphamio Update',
-				text: 'Downloading draw.io update...'
+				text: 'Downloading bphamio update...'
 			});
 
 			setUpdateState('downloading', info.version);

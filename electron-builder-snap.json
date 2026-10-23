@@ -22,13 +22,13 @@
   },
   "npmRebuild": false,
   "linux": {
-  	"executableName": "drawio",
+  	"executableName": "bphamio",
     "category": "Graphics",
-    "maintainer": "draw.io <snap@draw.io>",
+    "maintainer": "bpham49 <bpham49@users.noreply.github.com>",
     "icon": "./build",
     "desktop": {
       "entry": {
-        "StartupWMClass": "draw-io"
+        "StartupWMClass": "bphamio"
       }
     },
     "target": [
@@ -50,8 +50,8 @@
   "fileAssociations": [
 	  {
 	  	"ext": "drawio",
-	  	"name": "draw.io Diagram",
-	  	"description": "draw.io Diagram",
+	  	"name": "bphamio Diagram",
+	  	"description": "bphamio Diagram",
 	  	"mimeType": "application/vnd.jgraph.mxfile",
 	  	"role": "Editor"
 	  },
