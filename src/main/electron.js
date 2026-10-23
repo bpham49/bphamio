@@ -19,6 +19,7 @@ import FileWatcher from './file-watcher.js';
 import { ConfigPathGrants } from './config-paths.js';
 import { getUrlParams, getUrlParamsFiles } from './url-params.js';
 import { ensureMcpServerRunning, reportActiveFile, stopMcpServer, getMcpStatus } from './drawio-agentic.js';
+import { agentAsk, agentCancel } from './agent.js';
 import elecUpPkg from 'electron-updater';
 const {autoUpdater} = elecUpPkg;
 import {PDFDocument, PDFHexString, PDFName} from '@cantoo/pdf-lib';
@@ -4543,6 +4544,20 @@ ipcMain.on("rendererReq", async (event, args) =>
 			break;
 		case 'mcpStatus':
 			ret = await getMcpStatus();
+			break;
+		case 'reportActiveFile':
+			reqStr(args.path, 'path');
+			await assertWritablePath(args.path);
+			ret = await reportActiveFile(args.path);
+			break;
+		case 'agentAsk':
+			reqStr(args.filePath, 'filePath');
+			// Only files the user opened through OS chrome, same as saves
+			await assertWritablePath(args.filePath);
+			ret = await agentAsk(event.sender, args);
+			break;
+		case 'agentCancel':
+			agentCancel();
 			break;
 		case 'deleteFile':
 			reqStr(args.file, 'file');
